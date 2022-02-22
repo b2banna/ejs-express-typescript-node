@@ -11,7 +11,10 @@ const myFormat = printf(({ timestamp, level, message, meta, stack }) => {
 const customFormatter = combine(colorize(), timestamp(), splat(), myFormat);
 const winstonDailyRotateFileTransportError = new winstonDailyRotateFile({ filename: "./logs/%DATE%.log", datePattern: "YYYY-MM-DD", level: "info" });
 const winstonConsoleTransport = new winston.transports.Console({ level: "info" });
-const transports = [winstonDailyRotateFileTransportError, winstonConsoleTransport];
+const transports: (winstonDailyRotateFile | winston.transports.ConsoleTransportInstance)[] = [winstonConsoleTransport];
+if (process.env.NODE_ENV === "development") {
+  transports.push(winstonDailyRotateFileTransportError);
+}
 const options = { level: "debug", transports, format: customFormatter };
 
 export const Logger = winston.createLogger(options);
