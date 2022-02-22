@@ -17,37 +17,52 @@
   </table>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="myModal" role="dialog">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">User Details</h4>
+<!-- Drawer -->
+<div id="drawer" class="drawer h-100 w-25">
+  <div class="card h-100">
+    <div class="card-body">
+      <h5 class="card-title">
+        User Details
+        <button id="drawer-close" type="button" class="close" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </h5>
+      <input id="id" type="hidden" />
+      <div class="form-group">
+        <label for="firstName" class="col-form-label">First Name</label>
+        <input id="firstName" type="text" class="form-control form-control-sm" required>
       </div>
-      <div class="modal-body">
-        <input id="id" type="hidden" />
-        <div class="form-group">
-          <label for="firstName" class="col-form-label">First Name</label>
-          <input id="firstName" type="text" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label for="lastName" class="col-form-label">Last Name</label>
-          <input id="lastName" type="text" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label for="email" class="col-form-label">Email</label>
-          <input id="email" type="email" class="form-control" required>
-        </div>
+      <div class="form-group">
+        <label for="lastName" class="col-form-label">Last Name</label>
+        <input id="lastName" type="text" class="form-control form-control-sm" required>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button id="save" type="button" class="btn btn-primary">Save</button>
+      <div class="form-group">
+        <label for="email" class="col-form-label">Email</label>
+        <input id="email" type="email" class="form-control form-control-sm" required>
+      </div>
+      <div class="form-group row">
+        <div class="col-sm-6">
+          <button id="drawer-cancel" type="submit" class="btn btn-sm btn-secondary btn-block">Cancel</button>
+        </div>
+        <div class="col-sm-6">
+          <button id="drawer-save" type="submit" class="btn btn-sm btn-primary btn-block">Save</button>
+        </div>
       </div>
     </div>
-
   </div>
 </div>
+
+<style>
+  .drawer {
+    top: 0;
+    right: 0;
+    position: fixed;
+    display: none;
+    overflow: auto;
+    z-index: 2000;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  }
+</style>
 
 <script>
 
@@ -108,20 +123,20 @@
     });
   }
 
-  const showModel = (user) => {
+  const showDrawer = (user) => {
     $('#id').val(user.id);
     $('#firstName').val(user.firstName);
     $('#lastName').val(user.lastName);
     $('#email').val(user.email);
-    $('#myModal').modal('show');
+    $('#drawer').animate({ width: 'toggle' });
   };
 
-  const hideModel = () => {
+  const hideDrawer = () => {
     $('#id').val('');
     $('#firstName').val('');
     $('#lastName').val('');
     $('#email').val('');
-    $('#myModal').modal('hide');
+    $('#drawer').animate({ width: 'toggle' });
   };
 
   const updateUserById = (id, user) => {
@@ -138,6 +153,17 @@
     });
   };
 
+  const isDrawerOpen = () => {
+    return $('#drawer').is(':visible');
+  };
+
+  const clearDrawer = () => {
+    $('#id').val('');
+    $('#firstName').val('');
+    $('#lastName').val('');
+    $('#email').val('');
+  };
+
   jQuery(document).ready(function ($) {
 
     // Get all Users and populate the table
@@ -145,22 +171,38 @@
 
     // Add on click event to table rows and show data in modal
     $('#tbody').on('click', 'tr', function () {
-      const row = $(this).children('td:first');
-      const id = row.next().text();
-      const firstName = row.next().next().text();
-      const lastName = row.next().next().next().text();
-      const email = row.next().next().next().next().text();
-      showModel({ id, firstName, lastName, email });
+      if (!isDrawerOpen()) {
+        clearDrawer();
+        const row = $(this).children('td:first');
+        const id = row.next().text();
+        const firstName = row.next().next().text();
+        const lastName = row.next().next().next().text();
+        const email = row.next().next().next().next().text();
+        showDrawer({ id, firstName, lastName, email });
+      }
     });
 
     // Add on click event to save button in modal
-    $("#save").click(function () {
-      const id = $("#id").val();
-      const firstName = $("#firstName").val();
-      const lastName = $("#lastName").val();
-      const email = $("#email").val();
+    $("#drawer-save").click(function () {
+      const id = $('#id').val();
+      const firstName = $('#firstName').val();
+      const lastName = $('#lastName').val();
+      const email = $('#email').val();
       updateUserById(id, { firstName, lastName, email });
-      hideModel();
+      clearDrawer();
+      hideDrawer();
+    });
+
+    // close drawer on click of close button
+    $('#drawer-close').click(function () {
+      clearDrawer();
+      hideDrawer();
+    });
+
+    // close drawer on click of close button
+    $('#drawer-cancel').click(function () {
+      clearDrawer();
+      hideDrawer();
     });
   });
 
