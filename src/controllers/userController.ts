@@ -12,15 +12,17 @@ export default class UserController {
 
   async viewAllUsers(_req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     try {
-      return res.render('users', { layouts: "layout", title: 'Users' });
+      return res.render('index', { layouts: "layout", title: 'Users' });
     } catch (error) {
       next(error);
     }
   }
 
-  async getAllUsers(_req: Request, res: Response, _next: NextFunction): Promise<Response> {
+  async getAllUsers(req: Request, res: Response, _next: NextFunction): Promise<Response> {
     try {
-      const body = await this._userService.getAllUsers();
+      const filter = req.query.filter ? req.query.filter : {};
+      const sort = req.query.sort ? req.query.sort : {};
+      const body = await this._userService.getAllUsers(filter, sort);
       const code = HttpStatus.OK;
       return res.status(code).send(body);
     } catch (error: any) {
