@@ -86,12 +86,12 @@
     z-index: 1050;
   }
 
-  .currently-sorted[data-sort-dir="1"]::after {
-    content: "\25bc";
+  .currently-sorted[data-sort="1"]::after {
+    content: "▼";
   }
 
-  .currently-sorted[data-sort-dir="-1"]::after {
-    content: "\25b2";
+  .currently-sorted[data-sort="-1"]::after {
+    content: "▲";
   }
 </style>
 
@@ -257,14 +257,13 @@
     const dataField = $(this).data('field');
     // if data-field is not firstName, return
     if (dataField !== 'firstName') return;
-    const dataSortDirValue = $(this).data('sort-dir');
-    const newDataSortDirValue = dataSortDirValue === 1 ? -1 : 1;
-    $(this).removeClass('currently-sorted');
-    $(this).removeAttr('data-sort-dir');
-    $(this).attr('data-sort-dir', newDataSortDirValue);
-    $(this).data('sort-dir', newDataSortDirValue);
-    $(this).addClass('currently-sorted');
-    getUsers({ sort: { [dataField]: newDataSortDirValue } });
+    const dataSort = $(this).data('sort');
+    const newDataSort = dataSort === 1 ? -1 : 1;
+    $(this).data('sort', newDataSort)
+      .attr('data-sort', newDataSort)
+      .removeClass('currently-sorted')
+      .addClass('currently-sorted');
+    getUsers({ sort: { [dataField]: newDataSort } });
   });
 
   // search input keyup event handler
