@@ -6,6 +6,10 @@ export class UserService {
     return await UserModel.find({ ...filter }).sort({ ...sort });
   }
 
+  public async getUserById(id: string) {
+    return await UserModel.findById(id);
+  }
+
   public async updateUserById(id: string, user: IUser) {
     return await UserModel.findByIdAndUpdate(id, user, { new: true });
   }

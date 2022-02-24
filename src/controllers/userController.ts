@@ -32,6 +32,18 @@ export default class UserController {
     }
   }
 
+  async getUserById(req: Request, res: Response, _next: NextFunction): Promise<Response> {
+    try {
+      const body = await this._userService.getUserById(req.params.id);
+      const code = HttpStatus.OK;
+      return res.status(code).send(body);
+    } catch (error: any) {
+      const body = (error as Error).message;
+      const code = HttpStatus.INTERNAL_SERVER_ERROR;
+      return res.status(code).send(body);
+    }
+  }
+
   async updateUserById(req: Request, res: Response, _next: NextFunction): Promise<Response> {
     const id: string = req.params.id;
     const user = req.body;

@@ -1,6 +1,4 @@
-<div id="overlay-wrapper" class="overlay-wrapper position-fixed top-zero bottom-zero left-zero right-zero d-none">
-</div>
-<h1>
+<h1 class="display-4 text-center">
   <%= title %>
 </h1>
 <div class="table-responsive-sm">
@@ -25,35 +23,36 @@
 </div>
 
 <!-- Drawer -->
-<div id="drawer"
-  class="drawer shadow bg-white rounded h-100 w-25 position-fixed top-zero right-zero overflow-auto d-none">
-  <div class="card h-100">
-    <div class="card-body">
-      <h5 class="card-title">
-        User Details
-        <button id="drawer-close" type="button" class="close" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </h5>
-      <input id="id" type="hidden" />
-      <div class="form-group">
-        <label for="firstName" class="col-form-label">First Name</label>
-        <input id="firstName" type="text" class="form-control form-control-sm" required>
-      </div>
-      <div class="form-group">
-        <label for="lastName" class="col-form-label">Last Name</label>
-        <input id="lastName" type="text" class="form-control form-control-sm" required>
-      </div>
-      <div class="form-group">
-        <label for="email" class="col-form-label">Email</label>
-        <input id="email" type="email" class="form-control form-control-sm" required>
-      </div>
-      <div class="form-group row">
-        <div class="col-sm-6">
-          <button id="drawer-cancel" type="submit" class="btn btn-sm btn-secondary btn-block">Cancel</button>
+<div id="overlay-wrapper" class="overlay-wrapper position-fixed top-zero bottom-zero left-zero right-zero d-none">
+  <div id="drawer" class="drawer shadow bg-white rounded h-100 w-25 position-fixed top-zero right-zero overflow-auto">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">
+          User Details
+          <button id="drawer-close" type="button" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </h5>
+        <input id="id" type="hidden" />
+        <div class="form-group">
+          <label for="firstName" class="col-form-label">First Name</label>
+          <input id="firstName" type="text" class="form-control form-control-sm" required>
         </div>
-        <div class="col-sm-6">
-          <button id="drawer-save" type="submit" class="btn btn-sm btn-primary btn-block">Save</button>
+        <div class="form-group">
+          <label for="lastName" class="col-form-label">Last Name</label>
+          <input id="lastName" type="text" class="form-control form-control-sm" required>
+        </div>
+        <div class="form-group">
+          <label for="email" class="col-form-label">Email</label>
+          <input id="email" type="email" class="form-control form-control-sm" required>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-6">
+            <button id="drawer-cancel" type="submit" class="btn btn-sm btn-secondary btn-block">Cancel</button>
+          </div>
+          <div class="col-sm-6">
+            <button id="drawer-save" type="submit" class="btn btn-sm btn-primary btn-block">Save</button>
+          </div>
         </div>
       </div>
     </div>
@@ -169,11 +168,6 @@
             </tr>`;
   };
 
-  // check if drawer is open
-  const isDrawerOpen = () => {
-    return $('#drawer').is(':visible');
-  };
-
   // clear drawer content
   const clearDrawer = () => {
     $('#id').val('');
@@ -184,12 +178,11 @@
 
   // show drawer and fill the drawer content
   const showDrawer = (user) => {
-    $('#id').val(user.id);
+    $('#id').val(user._id);
     $('#firstName').val(user.firstName);
     $('#lastName').val(user.lastName);
     $('#email').val(user.email);
     $('#overlay-wrapper').removeClass('d-none').addClass('d-block');
-    $('#drawer').removeClass('d-none');
   };
 
   // hide drawer and clear the drawer content
@@ -199,7 +192,20 @@
     $('#lastName').val('');
     $('#email').val('');
     $('#overlay-wrapper').removeClass('d-block').addClass('d-none');
-    $('#drawer').addClass('d-none');
+  };
+
+  // get User record by id and show the drawer
+  const getUserById = (id) => {
+    const url = `/api/users/${id}`;
+    $.ajax({
+      url, type: 'GET',
+      success: function (data) {
+        showDrawer(data);
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
   };
 
   // update User record by id and refresh the table body
@@ -216,17 +222,12 @@
     });
   };
 
-  // table row click event handler
-  $('#tbody').on('click', 'tr', function () {
-    if (!isDrawerOpen()) {
-      clearDrawer();
-      const row = $(this).children('td:first');
-      const id = row.next().text();
-      const firstName = row.next().next().text();
-      const lastName = row.next().next().next().text();
-      const email = row.next().next().next().next().text();
-      showDrawer({ id, firstName, lastName, email });
-    }
+  // table row dblclick event handler
+  $('#tbody').on('dblclick', 'tr', function () {
+    clearDrawer();
+    const row = $(this).children('td:first');
+    const id = row.next().text();
+    getUserById(id);
   });
 
   // drawer save button click event handler
