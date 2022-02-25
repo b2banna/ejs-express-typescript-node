@@ -271,7 +271,7 @@
   $('#search').on('input', function () {
     const searchValue = ($(this).val()).trim();
     if (!search) return;
-    getUsers({ filter: { firstName: searchValue } });
+    getUsers({ filter: { firstName: searchValue }, sort: { firstName: 1 } });
   });
 
 </script>
