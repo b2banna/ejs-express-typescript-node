@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
 
+import { DbQueryDTO } from '../dtos/dbQueryDTO';
 import { UserService } from '../services/userService';
 
 export default class UserController {
@@ -20,9 +21,9 @@ export default class UserController {
 
   async getAllUsers(req: Request, res: Response, _next: NextFunction): Promise<Response> {
     try {
-      const filter = req.query.filter ? req.query.filter : {};
-      const sort = req.query.sort ? req.query.sort : {};
-      const body = await this._userService.getAllUsers(filter, sort);
+      const query = req.query;
+      const dbQueryDTO = new DbQueryDTO(query);
+      const body = await this._userService.getAllUsers(dbQueryDTO);
       const code = HttpStatus.OK;
       return res.status(code).send(body);
     } catch (error: any) {
