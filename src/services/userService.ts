@@ -14,12 +14,12 @@ const filterCondition = (value: any, options: FILTER_ENUMS) => {
 export class UserService {
 
   public async getAllUsers(dbQueryDTO: DbQueryDTO): Promise<Array<IUser>> {
-    const { limit, offset, sort, filter } = dbQueryDTO;
+    const { filter, sort, limit, offset } = dbQueryDTO;
 
     Object.keys(filter).forEach((key: any) => {
       filter[key] = filterCondition(filter[key], FILTER_ENUMS.LIKE);
     });
-    return await UserModel.find({ ...filter }).sort({ ...sort }).limit(limit).skip(offset);
+    return await UserModel.find(filter).sort(sort).limit(limit).skip(offset);
   }
 
   public async getUserById(id: string): Promise<IUser | null> {
