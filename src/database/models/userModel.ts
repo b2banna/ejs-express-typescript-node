@@ -14,12 +14,6 @@ const UserSchema = new Schema<IUser>({
   email: { type: String, required: true },
 }, {
   timestamps: true,
-  toObject: {
-    transform: function (_doc, ret, _options) {
-      delete ret.__v;
-      return ret;
-    }
-  }
 });
 
 export const UserModel = model(modelName, UserSchema);
