@@ -4,6 +4,7 @@ import HttpStatus from 'http-status-codes';
 import { DbQueryDTO } from '../dtos/dbQueryDTO';
 import { Logger as logger } from '../helpers/customLoggerHelper';
 import { UserService } from '../services/userService';
+import { CustomRequest } from '../types/CustomRequest';
 
 export default class UserController {
   private _userService: UserService;
@@ -12,8 +13,10 @@ export default class UserController {
     this._userService = new UserService();
   }
 
-  async viewAllUsers(_req: Request, res: Response, next: NextFunction): Promise<Response | void> {
+  async viewAllUsers(req: CustomRequest, res: Response, next: NextFunction): Promise<Response | void> {
     try {
+      console.log(req.session.user);
+      logger.info(JSON.stringify(req.session.user));
       return res.render('users/index', { layouts: "layout", title: 'Users' });
     } catch (error) {
       next(error);

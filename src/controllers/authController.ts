@@ -52,6 +52,7 @@ export default class AuthController {
             };
         } catch (error) {
             req.flash('error_msg', ['Error completing authentication', JSON.stringify(error, Object.getOwnPropertyNames(error))]);
+            return res.render('error');
         }
 
         res.redirect('/');

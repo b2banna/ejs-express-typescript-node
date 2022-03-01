@@ -1,8 +1,13 @@
 export = {
   ROUTER_PATH: {
     INDEX: '/',
-    API_BASE_PATH: '/api',
+    LOGIN_PATH: '/login',
+    AUTH_PATH: '/auth',
+    SIGN_IN_PATH: '/signin',
+    CALL_BACK_PATH: '/callback',
+    SIGN_OUT_PATH: '/signout',
     USER_PATH: '/users',
+    API_BASE_PATH: '/api',
     ID_PARAMS: '/:id',
   },
   EXPRESS_SESSION: {
@@ -17,12 +22,8 @@ export = {
         URL: '/me',
         SELECT: 'displayName,mail,userPrincipalName'
       },
-      USERS: {
-        URL: '/users',
-        SELECT: 'displayName,mail,userPrincipalName,id'
-      },
-      EMAIL: {
-        URL: '/me/sendMail'
+      ME_PHOTO_VALUE: {
+        URL: '/me/photo/$value',
       },
     }
   },

@@ -37,10 +37,8 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(ErrorMiddleware.flashErrorHandler);
-app.use((req: CustomRequest, res: Response, next: NextFunction): void => {
-  if (req.session.userId) {
-    res.locals.user = app.locals.users[req.session.userId];
-  }
+app.use((req: CustomRequest, _res: Response, next: NextFunction): void => {
+  req.session.user = req.session.userId ? app.locals.users[req.session.userId] : undefined;
   next();
 });
 app.use(express.static(join(__dirname, '..', 'public')));

@@ -3,7 +3,7 @@
 import { Client } from '@microsoft/microsoft-graph-client';
 require('isomorphic-fetch');
 
-import constants from '../constants';
+import CONSTANTS from '../constants';
 
 export default class MicrosoftGraphService {
 
@@ -13,14 +13,13 @@ export default class MicrosoftGraphService {
 
     public async getUserDetails(accessToken: string) {
         const client = await this._getAuthenticatedClient(accessToken);
-        return await client.api(constants.MICROSOFT_GRAPH_CLIENT.API.ME.URL)
-            .select(constants.MICROSOFT_GRAPH_CLIENT.API.ME.SELECT)
+        return await client.api(CONSTANTS.MICROSOFT_GRAPH_CLIENT.API.ME.URL)
             .get();
     }
 
-    public async getUserPhoto(accessToken: string) {
+    public async getUserPhoto(accessToken: string): Promise<Blob> {
         const client = await this._getAuthenticatedClient(accessToken);
-        return await client.api('me/photo/$value')
+        return await client.api(CONSTANTS.MICROSOFT_GRAPH_CLIENT.API.ME_PHOTO_VALUE.URL)
             .get();
     }
 
