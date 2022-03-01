@@ -14,6 +14,14 @@ const UserSchema = new Schema<IUser>({
   email: { type: String, required: true },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    versionKey: false,
+  },
+  toObject: {
+    virtuals: true,
+    versionKey: false,
+  }
 });
 
 export const UserModel = model(modelName, UserSchema);

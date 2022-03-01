@@ -1,13 +1,21 @@
-import { connect } from 'mongoose';
+import { connect, ConnectOptions } from 'mongoose';
+
+import { Logger as logger } from '../helpers/customLoggerHelper';
 
 export class MongoDB {
 
   static async connect(uri: string) {
     try {
-      await connect(uri);
-      console.log(`\nConnect to the MongoDB database!`);
+      const options: ConnectOptions = {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+        useFindAndModify: false
+      };
+      await connect(uri, options);
+      logger.info('MongoDB connected');
     } catch (error) {
-      console.log(`\n[ERROR] Failed to the MongoDB database`, error);
+      logger.error(error);
       // kill process if failed to connect to the database
       process.exit(1);
     }

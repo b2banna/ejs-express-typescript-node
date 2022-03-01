@@ -1,12 +1,13 @@
 require('dotenv').config();
 
 import cors from 'cors';
-import express, { json, urlencoded } from 'express';
+import express, { json, NextFunction, Request, Response, urlencoded } from 'express';
 import expressEjsLayouts from 'express-ejs-layouts';
-// import helmet from 'helmet';
+import helmet from 'helmet';
 import { join } from 'path';
 
 import CONSTANTS from './constants';
+import { Logger as logger } from './helpers/customLoggerHelper';
 import { MongoDB } from './database';
 import { ErrorMiddleware } from './middlewares/errorMiddleware';
 import { LogMiddleware } from "./middlewares/logMiddleware";
@@ -18,8 +19,12 @@ const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/sample-mflix";
 MongoDB.connect(uri);
 
 // Setup middlewares
+app.use(helmet());
+app.use((_req: Request, res: Response, next: NextFunction): void => {
+  res.setHeader('Content-Security-Policy', "frame-ancestors 'none'");
+  next();
+});
 app.use(cors());
-// app.use(helmet());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(express.static(join(__dirname, '..', 'public')));
@@ -44,5 +49,5 @@ app.use(ErrorMiddleware.errorHandle);
 
 // Start server
 app.listen(port, async () => {
-  console.log(`\nServer listening on port: ${port}`);
+  logger.info(`Server started on port ${port}`);
 });

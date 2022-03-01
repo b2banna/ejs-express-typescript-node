@@ -26,7 +26,8 @@ export default class UserController {
       const body = await this._userService.getAllUsers(dbQueryDTO);
       const code = HttpStatus.OK;
       return res.status(code).send(body);
-    } catch (error: any) {
+    } catch (error) {
+      console.error(error);
       const body = (error as Error).message;
       const code = HttpStatus.INTERNAL_SERVER_ERROR;
       return res.status(code).send(body);
@@ -38,7 +39,8 @@ export default class UserController {
       const body = await this._userService.getUserById(req.params.id);
       const code = HttpStatus.OK;
       return res.status(code).send(body);
-    } catch (error: any) {
+    } catch (error) {
+      console.error(error);
       const body = (error as Error).message;
       const code = HttpStatus.INTERNAL_SERVER_ERROR;
       return res.status(code).send(body);
@@ -52,7 +54,8 @@ export default class UserController {
       const body = await this._userService.updateUserById(id, user);
       const code = HttpStatus.OK;
       return res.status(code).send(body);
-    } catch (error: any) {
+    } catch (error) {
+      console.error(error);
       const body = (error as Error).message;
       const code = HttpStatus.INTERNAL_SERVER_ERROR;
       return res.status(code).send(body);
