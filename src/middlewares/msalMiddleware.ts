@@ -14,9 +14,9 @@ export default class MsalMiddleware {
     static getInstance(): MsalMiddleware {
         const configuration: Configuration = {
             auth: {
-                clientId: process.env.OAUTH_APP_ID,
-                authority: process.env.OAUTH_AUTHORITY,
-                clientSecret: process.env.OAUTH_APP_SECRET
+                clientId: process.env.MICROSOFT_CLIENT_ID,
+                clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+                authority: process.env.MICROSOFT_AUTHORITY
             }
         }
         if (!MsalMiddleware._instance) {
@@ -27,26 +27,26 @@ export default class MsalMiddleware {
 
     public async getAuthCodeUrl(): Promise<string> {
         const request: AuthorizationUrlRequest = {
-            scopes: process.env.OAUTH_SCOPES.split(','),
-            redirectUri: process.env.OAUTH_REDIRECT_URI
+            redirectUri: process.env.MICROSOFT_REDIRECT_URI,
+            scopes: process.env.MICROSOFT_SCOPES.split(',')
         };
         return await this._cca.getAuthCodeUrl(request);
     }
 
     public async acquireTokenByCode(code: string): Promise<AuthenticationResult | null> {
         const request: AuthorizationCodeRequest = {
-            scopes: process.env.OAUTH_SCOPES.split(','),
-            redirectUri: process.env.OAUTH_REDIRECT_URI,
-            code
+            code,
+            redirectUri: process.env.MICROSOFT_REDIRECT_URI,
+            scopes: process.env.MICROSOFT_SCOPES.split(',')
         };
         return await this._cca.acquireTokenByCode(request);
     }
 
     public async acquireTokenSilent(account: AccountInfo): Promise<AuthenticationResult | null> {
         const request: SilentFlowRequest = {
-            forceRefresh: true, // This will force a token refresh
-            scopes: process.env.OAUTH_SCOPES.split(','),
             account,
+            forceRefresh: true, // This will force a token refresh
+            scopes: process.env.MICROSOFT_SCOPES.split(',')
         };
         return await this._cca.acquireTokenSilent(request);
     }
