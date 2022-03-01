@@ -15,7 +15,7 @@ import { ApiRouterHandler, ViewRouterHandler } from './routers';
 
 const port = process.env.PORT || process.env.port || "3000";
 const app = express();
-const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/sample-mflix";
+const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/test";
 MongoDB.connect(uri);
 
 // Setup middlewares
