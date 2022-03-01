@@ -257,13 +257,14 @@
   // table header click event handler
   $('#table th').on('click', function () {
     const dataField = $(this).data('field');
-    // if data-field is not firstName, return
-    if (dataField !== 'firstName') return;
+    const dataFields = ['firstName', 'lastName', 'email'];
+    if (!dataFields.includes(dataField)) return;
     const dataSort = $(this).data('sort');
     const newDataSort = dataSort === 1 ? -1 : 1;
+    const allElements = document.querySelectorAll(".currently-sorted");
+    allElements.forEach((element) => element.classList.remove("currently-sorted"));
     $(this).data('sort', newDataSort)
       .attr('data-sort', newDataSort)
-      .removeClass('currently-sorted')
       .addClass('currently-sorted');
     getUsers({ sort: { [dataField]: newDataSort } });
   });
