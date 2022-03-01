@@ -25,4 +25,13 @@ export class ErrorMiddleware {
     const response = new ResponseDTO(statusCode, message, {});
     return res.status(response.statusCode).send(response);
   }
+
+  static flashErrorHandler(req: Request, res: Response, next: NextFunction): void {
+    res.locals.error = req.flash('error_msg');
+    const errors = req.flash('error');
+    for (const error of errors) {
+      res.locals.error.push({ message: 'An error occurred', debug: error });
+    }
+    next();
+  }
 }

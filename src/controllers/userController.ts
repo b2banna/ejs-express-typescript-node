@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
 
 import { DbQueryDTO } from '../dtos/dbQueryDTO';
+import { Logger as logger } from '../helpers/customLoggerHelper';
 import { UserService } from '../services/userService';
 
 export default class UserController {
@@ -13,7 +14,7 @@ export default class UserController {
 
   async viewAllUsers(_req: Request, res: Response, next: NextFunction): Promise<Response | void> {
     try {
-      return res.render('index', { layouts: "layout", title: 'Users' });
+      return res.render('users/index', { layouts: "layout", title: 'Users' });
     } catch (error) {
       next(error);
     }
@@ -27,7 +28,7 @@ export default class UserController {
       const code = HttpStatus.OK;
       return res.status(code).send(body);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       const body = (error as Error).message;
       const code = HttpStatus.INTERNAL_SERVER_ERROR;
       return res.status(code).send(body);
@@ -40,7 +41,7 @@ export default class UserController {
       const code = HttpStatus.OK;
       return res.status(code).send(body);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       const body = (error as Error).message;
       const code = HttpStatus.INTERNAL_SERVER_ERROR;
       return res.status(code).send(body);
@@ -55,7 +56,7 @@ export default class UserController {
       const code = HttpStatus.OK;
       return res.status(code).send(body);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       const body = (error as Error).message;
       const code = HttpStatus.INTERNAL_SERVER_ERROR;
       return res.status(code).send(body);

@@ -1,0 +1,280 @@
+<main role="main" class="container-fluid">
+  <h1 class="display-4 text-center">
+    <%= title %>
+  </h1>
+  <div class="table-responsive-sm">
+    <div class="form-group row justify-content-end">
+      <div class="col-sm-2">
+        <input id="search" class="form-control form-control-sm" type="search" placeholder="Search" aria-label="Search">
+      </div>
+    </div>
+    <table id="table" class="table table-sm table-bordered table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col" data-field="rowId">Id</th>
+          <th scope="col" data-field="id" class="d-none"></th>
+          <th scope="col" data-field="firstName">First Name</th>
+          <th scope="col" data-field="lastName">Last Name</th>
+          <th scope="col" data-field="email">Email</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Drawer -->
+  <div id="overlay-wrapper" class="overlay-wrapper position-fixed top-zero bottom-zero left-zero right-zero d-none">
+    <div id="drawer" class="drawer shadow bg-white rounded h-100 w-25 position-fixed top-zero right-zero overflow-auto">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">
+            User Details
+            <button id="drawer-close" type="button" class="close" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </h5>
+          <input id="id" type="hidden" />
+          <div class="form-group">
+            <label for="firstName" class="col-form-label">First Name</label>
+            <input id="firstName" type="text" class="form-control form-control-sm" required>
+          </div>
+          <div class="form-group">
+            <label for="lastName" class="col-form-label">Last Name</label>
+            <input id="lastName" type="text" class="form-control form-control-sm" required>
+          </div>
+          <div class="form-group">
+            <label for="email" class="col-form-label">Email</label>
+            <input id="email" type="email" class="form-control form-control-sm" required>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-6">
+              <button id="drawer-cancel" type="submit" class="btn btn-sm btn-secondary btn-block">Cancel</button>
+            </div>
+            <div class="col-sm-6">
+              <button id="drawer-save" type="submit" class="btn btn-sm btn-primary btn-block">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<!-- custom css for this page -->
+<style type="text/css">
+  .top-zero {
+    top: 0;
+  }
+
+  .bottom-zero {
+    bottom: 0;
+  }
+
+  .left-zero {
+    left: 0;
+  }
+
+  .right-zero {
+    right: 0;
+  }
+
+  .overlay-wrapper {
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.24);
+  }
+
+  .drawer {
+    z-index: 1050;
+  }
+
+  .currently-sorted[data-sort="1"]::after {
+    content: "▼";
+  }
+
+  .currently-sorted[data-sort="-1"]::after {
+    content: "▲";
+  }
+</style>
+
+<!-- custom js for this page -->
+<script type="text/javascript">
+  // document ready event handler
+  $(document).ready(function () {
+    getUsers();
+  });
+
+  // get Users records from the server and display them in the table
+  const getUsers = (...arguments) => {
+    let url = "/api/users";
+
+    if (arguments.length > 0) {
+      const [query] = arguments;
+      const queryString = `?${$.param(query)}`;
+      url += queryString;
+    }
+    $.ajax({
+      url, type: 'GET',
+      success: function (users) {
+        emptyTBody();
+        if (!isNullAndEmpty(users)) {
+          $.each(users, function (index, user) {
+            appendRowInTBody(createRowForTBody(index, user));
+          });
+        } else {
+          appendRowInTBody(createEmptyRowForTBody());
+        }
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  }
+
+  // empty the table body
+  const emptyTBody = () => {
+    // Empty the table body
+    $('#tbody').empty();
+  };
+
+  // check if data is null and empty
+  const isNullAndEmpty = (data) => {
+    if (data === null || data === undefined || data === '' || data.length === 0) {
+      return true;
+    }
+    return false;
+  };
+
+  // append row in table body
+  const appendRowInTBody = (row) => {
+    // Append a row to the table body
+    $('#tbody').append(row);
+  };
+
+  // create a row for the table body
+  const createRowForTBody = (index, user) => {
+    // Create a row for the table body
+    return `<tr>
+              <td >${index + 1}</td>
+              <td class="d-none">${user._id}</td>
+              <td >${user.firstName}</td>
+              <td >${user.lastName}</td>
+              <td >${user.email}</td>
+            </tr>`;
+  };
+
+  // create an empty row for the table body
+  const createEmptyRowForTBody = () => {
+    // Create a empty row for the table body
+    return `<tr>
+              <td colspan="5">No data found</td>
+            </tr>`;
+  };
+
+  // clear drawer content
+  const clearDrawer = () => {
+    $('#id').val('');
+    $('#firstName').val('');
+    $('#lastName').val('');
+    $('#email').val('');
+  };
+
+  // show drawer and fill the drawer content
+  const showDrawer = (user) => {
+    $('#id').val(user._id);
+    $('#firstName').val(user.firstName);
+    $('#lastName').val(user.lastName);
+    $('#email').val(user.email);
+    $('#overlay-wrapper').removeClass('d-none').addClass('d-block');
+  };
+
+  // hide drawer and clear the drawer content
+  const hideDrawer = () => {
+    $('#id').val('');
+    $('#firstName').val('');
+    $('#lastName').val('');
+    $('#email').val('');
+    $('#overlay-wrapper').removeClass('d-block').addClass('d-none');
+  };
+
+  // get User record by id and show the drawer
+  const getUserById = (id) => {
+    const url = `/api/users/${id}`;
+    $.ajax({
+      url, type: 'GET',
+      success: function (data) {
+        showDrawer(data);
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  };
+
+  // update User record by id and refresh the table body
+  const updateUserById = (id, user) => {
+    const url = `/api/users/${id}`;
+    $.ajax({
+      url, type: 'PUT', data: user,
+      success: function (data) {
+        getUsers();
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  };
+
+  // table row dblclick event handler
+  $('#tbody').on('dblclick', 'tr', function () {
+    clearDrawer();
+    const row = $(this).children('td:first');
+    const id = row.next().text();
+    getUserById(id);
+  });
+
+  // drawer save button click event handler
+  $("#drawer-save").click(function () {
+    const id = $('#id').val();
+    const firstName = $('#firstName').val();
+    const lastName = $('#lastName').val();
+    const email = $('#email').val();
+    updateUserById(id, { firstName, lastName, email });
+    clearDrawer();
+    hideDrawer();
+  });
+
+  // close drawer button click event handler
+  $('#drawer-close').click(function () {
+    clearDrawer();
+    hideDrawer();
+  });
+
+  // cancel drawer button click event handler
+  $('#drawer-cancel').click(function () {
+    clearDrawer();
+    hideDrawer();
+  });
+
+  // table header click event handler
+  $('#table th').on('click', function () {
+    const dataField = $(this).data('field');
+    const dataFields = ['firstName', 'lastName', 'email'];
+    if (!dataFields.includes(dataField)) return;
+    const dataSort = $(this).data('sort');
+    const newDataSort = dataSort === 1 ? -1 : 1;
+    const allElements = document.querySelectorAll(".currently-sorted");
+    allElements.forEach((element) => element.classList.remove("currently-sorted"));
+    $(this).data('sort', newDataSort)
+      .attr('data-sort', newDataSort)
+      .addClass('currently-sorted');
+    getUsers({ sort: { [dataField]: newDataSort } });
+  });
+
+  // search input keyup event handler
+  $('#search').on('input', function () {
+    const searchValue = ($(this).val()).trim();
+    if (!search) return;
+    getUsers({ filter: { firstName: searchValue }, sort: { firstName: 1 } });
+  });
+
+</script>
