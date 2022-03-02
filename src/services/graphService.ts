@@ -1,14 +1,15 @@
-'use strict'
-
-import { Client } from '@microsoft/microsoft-graph-client';
 require('isomorphic-fetch');
+import { Client, Options } from '@microsoft/microsoft-graph-client';
 
 import CONSTANTS from '../constants';
 
 export default class MicrosoftGraphService {
 
     private async _getAuthenticatedClient(accessToken: string): Promise<Client> {
-        return Client.init({ authProvider: (done) => done(null, accessToken) });
+        const options: Options = {
+            authProvider: (done) => done(null, accessToken)
+        }
+        return Client.init(options);
     }
 
     public async getUserDetails(accessToken: string) {
