@@ -2,7 +2,6 @@ require('dotenv').config();
 
 import flash from 'connect-flash';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
 import express, { json, NextFunction, Request, Response, urlencoded } from 'express';
 import expressEjsLayouts from 'express-ejs-layouts';
 import session from 'express-session';
@@ -32,7 +31,6 @@ app.use((_req: Request, res: Response, next: NextFunction): void => {
 });
 app.use(session(CONSTANTS.EXPRESS_SESSION as session.SessionOptions));
 app.use(flash());
-app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
