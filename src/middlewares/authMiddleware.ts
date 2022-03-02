@@ -24,6 +24,7 @@ export default class AuthMiddleware {
         const user = req.session.user;
         const userId = req.session.userId;
         if (!user || !userId) {
+            // if user and userId are not set in session, try to get auth code using url
             req.session.redirectTo = req.originalUrl;
             const response = await this._msalMiddleware.getAuthCodeUrl();
             return res.redirect(response);
@@ -31,30 +32,33 @@ export default class AuthMiddleware {
 
         const account = user.account;
         const tokenExpireTimestamp = account.idTokenClaims.exp;
-        if (this._canAcquireTokenSilent(tokenExpireTimestamp)) {
-            try {
-                const response = await this._msalMiddleware.acquireTokenSilent(account);
-                if (!response) {
-                    req.session.redirectTo = req.originalUrl;
-                    return res.redirect('login');
-                }
-                user.accessToken = response.accessToken;
-                user.account = response.account;
-                req.app.locals.users[userId] = req.session.user = user;
-            }
-            catch (error) {
-                req.flash('error_msg', ['Error getting auth URL', JSON.stringify(error, Object.getOwnPropertyNames(error))]);
+        const isTokenExpired = this._canAcquireTokenSilent(tokenExpireTimestamp);
+        if (!isTokenExpired) {
+            // if token is not expired, continue
+            const redirectUrl = req.session.redirectTo ? req.session.redirectTo : '';
+            if (!redirectUrl) return next(); // if redirectUrl is not set, then continue
+            req.session.redirectTo = '';
+            // if redirectUrl is set, then redirect to that url
+            return res.redirect(redirectUrl);
+        }
+
+        try {
+            // if token is expired, try to acquire token silently
+            const response = await this._msalMiddleware.acquireTokenSilent(account);
+            if (!response) {
+                // if acquireTokenSilent fails, then redirect to login page
                 req.session.redirectTo = req.originalUrl;
                 return res.redirect('login');
             }
+            user.accessToken = response.accessToken;
+            user.account = response.account;
+            req.app.locals.users[userId] = req.session.user = user;
         }
-        const redirectUrl = req.session.redirectTo ? req.session.redirectTo : '';
-        if (redirectUrl) {
-            req.session.redirectTo = '';
-            return res.redirect(redirectUrl);
+        catch (error) {
+            req.flash('error_msg', ['Error getting auth URL', JSON.stringify(error, Object.getOwnPropertyNames(error))]);
+            req.session.redirectTo = req.originalUrl;
+            return res.redirect('login');
         }
         return next();
-
-
     }
 }
