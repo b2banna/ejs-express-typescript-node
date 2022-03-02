@@ -9,8 +9,8 @@ export interface IUser {
 }
 
 const UserSchema = new Schema<IUser>({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
+  firstName: { type: String, required: true, index: true },
+  lastName: { type: String, required: true, index: true },
   email: { type: String, required: true, unique: true },
 }, {
   timestamps: true,
@@ -23,8 +23,5 @@ const UserSchema = new Schema<IUser>({
     versionKey: false,
   }
 });
-
-// indexing for firstName and lastName
-UserSchema.index({ firstName: 1, lastName: 1 });
 
 export const UserModel = model(modelName, UserSchema);
