@@ -13,10 +13,8 @@ export default class UserController {
     this._userService = new UserService();
   }
 
-  async viewAllUsers(req: CustomRequest, res: Response, next: NextFunction): Promise<Response | void> {
+  async viewAllUsers(_req: CustomRequest, res: Response, next: NextFunction): Promise<Response | void> {
     try {
-      console.log(req.session.user);
-      logger.info(JSON.stringify(req.session.user));
       return res.render('users/index', { layouts: "layout", title: 'Users' });
     } catch (error) {
       next(error);
