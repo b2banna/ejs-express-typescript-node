@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
 import CONSTANTS from '../../constants';
-
 import AuthController from '../../controllers/authController';
 
 export const AuthViewRouterHandler = Router();
