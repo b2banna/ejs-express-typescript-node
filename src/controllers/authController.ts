@@ -58,10 +58,10 @@ export default class AuthController {
         res.redirect('/');
     }
     async signOut(req: CustomRequest, res: Response, _next: NextFunction) {
-        if (req.session.userId) {
+        const homeAccountId = req.session.userId;
+        if (homeAccountId) {
             // Look up the user's account in the cache
-            const accounts = await this._msalMiddleware.getAllAccounts();
-            const account = accounts.find((account: AccountInfo) => account.homeAccountId === req.session.userId);
+            const account = await this._msalMiddleware.getAccountByHomeId(homeAccountId);
             // Remove the account
             if (account) await this._msalMiddleware.removeAccount(account);
         }

@@ -51,8 +51,8 @@ export default class MsalMiddleware {
         return await this._cca.acquireTokenSilent(request);
     }
 
-    public async getAllAccounts(): Promise<AccountInfo[]> {
-        return await this._cca.getTokenCache().getAllAccounts();
+    public async getAccountByHomeId(homeAccountId: string): Promise<AccountInfo | null> {
+        return await this._cca.getTokenCache().getAccountByHomeId(homeAccountId);
     }
 
     public async removeAccount(account: AccountInfo): Promise<void> {
