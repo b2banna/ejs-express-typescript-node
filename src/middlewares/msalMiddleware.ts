@@ -6,7 +6,7 @@ export default class MsalMiddleware {
 
     constructor(configuration: Configuration) {
         if (MsalMiddleware._instance) {
-            throw new Error("Error - use Singleton.getInstance()");
+            throw new Error("Error - use MsalMiddleware.getInstance()");
         }
         this._cca = new ConfidentialClientApplication(configuration);
     }
