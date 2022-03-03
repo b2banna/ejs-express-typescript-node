@@ -1,4 +1,3 @@
-import { AccountInfo } from '@azure/msal-node';
 import { NextFunction, Request, Response } from 'express';
 
 import MsalMiddleware from '../middlewares/msalMiddleware';
