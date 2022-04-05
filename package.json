@@ -13,6 +13,9 @@
   },
   "author": "Krishan Kripal",
   "license": "ISC",
+  "engines": {
+    "node": "^16.0.0"
+  },
   "devDependencies": {
     "@types/connect-flash": "0.0.37",
     "@types/cookie-parser": "^1.4.2",
