@@ -103,6 +103,14 @@
     getUsers();
   });
 
+  function ajaxError(error) {
+    if (error.status === 401) {
+      window.location.reload();
+    } else {
+      console.log(error);
+    }
+  }
+
   // get Users records from the server and display them in the table
   const getUsers = (...arguments) => {
     let url = "/api/users";
@@ -124,9 +132,7 @@
           appendRowInTBody(createEmptyRowForTBody());
         }
       },
-      error: function (error) {
-        console.log(error);
-      }
+      error: ajaxError
     });
   }
 
@@ -204,9 +210,7 @@
       success: function (data) {
         showDrawer(data);
       },
-      error: function (error) {
-        console.log(error);
-      }
+      error: ajaxError
     });
   };
 
@@ -218,9 +222,7 @@
       success: function (data) {
         getUsers();
       },
-      error: function (error) {
-        console.log(error);
-      }
+      error: ajaxError
     });
   };
 

@@ -61,4 +61,36 @@ export default class AuthMiddleware {
         }
         return next();
     }
+
+    async checkAuthForRestAPIs(req: CustomRequest, res: Response, next: NextFunction) {
+        const user = req.session.user;
+        const userId = req.session.userId;
+
+        // if user and userId are not set in session, then send 401 response
+        if (!user || !userId) return res.status(401).send({ message: "Unauthorized" });
+
+        const account = user.account;
+        const tokenExpireTimestamp = account.idTokenClaims.exp;
+        const isTokenExpired = this._canAcquireTokenSilent(tokenExpireTimestamp);
+
+        // if token is not expired, continue
+        if (!isTokenExpired) return next();
+
+        try {
+            // if token is expired, try to acquire token silently
+            const response = await this._msalMiddleware.acquireTokenSilent(account);
+
+            // if acquireTokenSilent return null, then send 401 response
+            if (!response) return res.status(401).send({ message: "Unauthorized" });
+
+            user.accessToken = response.accessToken;
+            user.account = response.account;
+            req.app.locals.users[userId] = req.session.user = user;
+        }
+        catch (error) {
+            // if acquireTokenSilent fail, then send 401 response
+            return res.status(401).send({ message: "Unauthorized" });
+        }
+        return next();
+    }
 }
